@@ -1,9 +1,9 @@
 use serde::Deserialize;
-use solana_client::rpc_client::RpcClient;
+use solana_client::nonblocking::rpc_client::RpcClient;
 use solana_sdk::{
     commitment_config::CommitmentConfig,
     pubkey::Pubkey,
-    signature::{Keypair, Signer},
+    signature::{Keypair, Signature, Signer},
     system_instruction,
     transaction::Transaction,
 };
@@ -82,16 +82,16 @@ async fn main() -> anyhow::Result<()> {
             Ok(msg) => {
                 if let Some(subscribe_update::UpdateOneof::Block(block_update)) = msg.update_oneof {
                     info!("New block detected: slot {}", block_update.slot);
-
-                    match send_sol_transfer(
+                    let signature = send_sol_transfer(
                         &rpc_client,
                         &keypair,
                         &recipient,
                         config.transfer_amount_lamports,
                     )
-                    .await
-                    {
-                        Ok(signature) => info!("SOL transfer sent: {}", signature),
+                    .await;
+
+                    match signature {
+                        Ok(signature) => info!("SOL transfer sent: {}", signature.to_string()),
                         Err(e) => error!("Failed to send SOL transfer: {}", e),
                     }
                 }
@@ -112,8 +112,8 @@ async fn send_sol_transfer(
     keypair: &Keypair,
     recipient: &Pubkey,
     amount_lamports: u64,
-) -> anyhow::Result<String> {
-    let recent_blockhash = rpc_client.get_latest_blockhash()?;
+) -> anyhow::Result<Signature> {
+    let recent_blockhash = rpc_client.get_latest_blockhash().await?;
 
     let instruction = system_instruction::transfer(&keypair.pubkey(), recipient, amount_lamports);
     let transaction = Transaction::new_signed_with_payer(
@@ -123,6 +123,8 @@ async fn send_sol_transfer(
         recent_blockhash,
     );
 
-    let signature = rpc_client.send_and_confirm_transaction(&transaction)?;
-    Ok(signature.to_string())
+    let signature = rpc_client
+        .send_and_confirm_transaction(&transaction)
+        .await?;
+    Ok(signature)
 }
