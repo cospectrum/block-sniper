@@ -8,7 +8,7 @@ use super::types::*;
 
 pub async fn check_transactions(input: &TransactionResults) -> TransactionResults {
     let client = RpcClient::new(input.rpc_url.clone());
-    let mut results = Vec::new();
+    let mut results = Vec::with_capacity(input.results.len());
     for batch in input.results.chunks(input.batch_size) {
         results.extend(check_transaction_batch(&client, batch).await);
     }
