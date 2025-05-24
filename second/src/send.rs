@@ -51,8 +51,9 @@ async fn send_transaction(
     match client.send_transaction(&tx).await {
         Ok(signature) => {
             let duration = clock.elapsed();
+            let signature = signature.to_string();
             TransactionResult::Sent(SentTransaction {
-                duration,
+                duration_secs: duration.as_secs_f64(),
                 signature,
             })
         }

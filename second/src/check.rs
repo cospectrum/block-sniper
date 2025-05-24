@@ -1,5 +1,8 @@
+use std::str::FromStr;
+
 use futures::future::join_all;
 use solana_client::nonblocking::rpc_client::RpcClient;
+use solana_sdk::signature::Signature;
 
 use super::types::*;
 
@@ -28,7 +31,10 @@ async fn check_transaction(client: &RpcClient, result: &TransactionResult) -> Tr
     let TransactionResult::Sent(tx) = result else {
         return result.clone();
     };
-    let Ok(status) = client.get_signature_status(&tx.signature).await else {
+    let Ok(signature) = Signature::from_str(&tx.signature) else {
+        return TransactionResult::Failed("invalid signature".to_owned());
+    };
+    let Ok(status) = client.get_signature_status(&signature).await else {
         return TransactionResult::Failed("failed to get signature status".to_owned());
     };
     match status {

@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use solana_sdk::signature::Signature;
 
 #[derive(Deserialize, Serialize, Clone)]
 #[serde(tag = "type", content = "data")]
@@ -41,6 +40,6 @@ pub struct Transfer {
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct SentTransaction {
-    pub duration: std::time::Duration,
-    pub signature: Signature,
+    pub duration_secs: f64,
+    pub signature: String,
 }
