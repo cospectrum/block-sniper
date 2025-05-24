@@ -1,8 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-    "first"
-, "second", "third"]
+    "first",
+    "second",
+    "third",
+]
 
 [workspace.dependencies]
 anyhow = "1.0.98"
