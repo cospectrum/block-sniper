@@ -30,36 +30,42 @@ async fn check_transaction_batch(
 }
 
 async fn check_transaction(client: &RpcClient, result: TransactionResult) -> TransactionResult {
-    let tx = match result {
-        TransactionResult::Unknown { tx, details: _ } => tx,
-        TransactionResult::WithStatus { tx, status: _ } => tx,
-        TransactionResult::Sent(tx) => tx,
+    let signature = match result {
+        TransactionResult::Unknown {
+            signature,
+            details: _,
+        } => signature,
+        TransactionResult::WithStatus {
+            signature,
+            status: _,
+        } => signature,
+        TransactionResult::Sent(tx) => tx.signature,
         _ => return result,
     };
-    let Ok(signature) = Signature::from_str(&tx.signature) else {
+    let Ok(tx_signature) = Signature::from_str(&signature) else {
         return TransactionResult::Failed {
+            signature,
             reason: "invalid signature".to_owned(),
-            tx,
         };
     };
     let Ok(mut statuses) = client
-        .get_signature_statuses_with_history(&[signature])
+        .get_signature_statuses_with_history(&[tx_signature])
         .await
     else {
         return TransactionResult::Unknown {
             details: "failed to get signature status".to_owned(),
-            tx,
+            signature,
         };
     };
     let status = statuses.value[0].take();
     match status {
         Some(res) => {
             let status = format!("{:?}", res.confirmation_status());
-            TransactionResult::WithStatus { tx, status }
+            TransactionResult::WithStatus { signature, status }
         }
         None => TransactionResult::Unknown {
             details: "no transaction status".to_owned(),
-            tx,
+            signature,
         },
     }
 }
