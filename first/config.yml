@@ -1,0 +1,6 @@
+rpc_url: https://api.mainnet-beta.solana.com
+batch_size: 32
+wallets:
+  - 7EcDhSYGxXyscszYEp35KHN8vvw3svAuLKTzXwCFLtV
+  - DpNXPNWvWoHaZ9P3WtfGCb2ZdLihW8VW1w1Ph4KDH9iG
+  - 14grJpemFaf88c8tiVb77W7TYg2W3ir6pfkKz3YjhhZ5
