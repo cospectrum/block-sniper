@@ -24,10 +24,21 @@ pub struct TransactionResults {
 #[derive(Serialize, Deserialize, Clone)]
 #[serde(tag = "status", content = "data")]
 pub enum TransactionResult {
-    FailedToSend { reason: String },
-    Failed { signature: String, reason: String },
-    Unknown { signature: String, details: String },
-    WithStatus { status: String },
+    FailedToSend {
+        reason: String,
+    },
+    Failed {
+        tx: SentTransaction,
+        reason: String,
+    },
+    Unknown {
+        tx: SentTransaction,
+        details: String,
+    },
+    WithStatus {
+        tx: SentTransaction,
+        status: String,
+    },
     Sent(SentTransaction),
 }
 
