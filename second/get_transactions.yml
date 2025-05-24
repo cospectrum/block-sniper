@@ -1,0 +1,9 @@
+type: TransactionResults
+data:
+  rpc_url: https://api.devnet.solana.com
+  batch_size: 5
+  results:
+  - status: Sent
+    data:
+      signature: Z2BgwfhkvxE3a5ay5v3zW3i79DtSc2EUDAefdNREXL5oAgbm7HeWH6hS1gYVKPfAoeg2hpNVFPe62rJnEgYd8BK
+      duration_secs: 0.1

@@ -28,7 +28,9 @@ async fn send_transaction_batch(client: &RpcClient, batch: &[Transfer]) -> Vec<T
     let blockhash = match client.get_latest_blockhash().await {
         Ok(hash) => hash,
         Err(e) => {
-            let err = TransactionResult::FailedToSend(e.to_string());
+            let err = TransactionResult::FailedToSend {
+                reason: e.to_string(),
+            };
             return std::iter::repeat(err).take(batch.len()).collect();
         }
     };
@@ -45,7 +47,11 @@ async fn send_transaction(
 ) -> TransactionResult {
     let tx = match signed_transaction(blockhash, transfer) {
         Ok(tx) => tx,
-        Err(e) => return TransactionResult::FailedToSend(e.to_string()),
+        Err(e) => {
+            return TransactionResult::FailedToSend {
+                reason: e.to_string(),
+            }
+        }
     };
     let clock = std::time::Instant::now();
     match client.send_transaction(&tx).await {
@@ -57,7 +63,9 @@ async fn send_transaction(
                 signature,
             })
         }
-        Err(e) => TransactionResult::FailedToSend(e.to_string()),
+        Err(e) => TransactionResult::FailedToSend {
+            reason: e.to_string(),
+        },
     }
 }
 

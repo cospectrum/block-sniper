@@ -32,16 +32,29 @@ async fn check_transaction(client: &RpcClient, result: &TransactionResult) -> Tr
         return result.clone();
     };
     let Ok(signature) = Signature::from_str(&tx.signature) else {
-        return TransactionResult::Failed("invalid signature".to_owned());
+        return TransactionResult::Failed {
+            signature: tx.signature.to_owned(),
+            reason: "invalid signature".to_owned(),
+        };
     };
-    let Ok(status) = client.get_signature_status(&signature).await else {
-        return TransactionResult::Failed("failed to get signature status".to_owned());
+    let Ok(mut statuses) = client
+        .get_signature_statuses_with_history(&[signature])
+        .await
+    else {
+        return TransactionResult::Unknown {
+            signature: tx.signature.to_owned(),
+            details: "failed to get signature status".to_owned(),
+        };
     };
+    let status = statuses.value[0].take();
     match status {
-        Some(res) => match res {
-            Err(_) => TransactionResult::Failed("tx failed".to_owned()),
-            Ok(_) => TransactionResult::Processed,
+        Some(res) => {
+            let status = format!("{:?}", res.confirmation_status());
+            TransactionResult::WithStatus { status }
+        }
+        None => TransactionResult::Unknown {
+            signature: tx.signature.to_owned(),
+            details: "failed to get signature status".to_owned(),
         },
-        None => TransactionResult::InProcess,
     }
 }
