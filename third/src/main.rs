@@ -80,21 +80,19 @@ async fn main() -> anyhow::Result<()> {
     while let Some(message) = stream.next().await {
         match message {
             Ok(msg) => {
-                if let Some(update) = msg.update_oneof {
-                    if let subscribe_update::UpdateOneof::Block(block_update) = update {
-                        info!("New block detected: slot {}", block_update.slot);
+                if let Some(subscribe_update::UpdateOneof::Block(block_update)) = msg.update_oneof {
+                    info!("New block detected: slot {}", block_update.slot);
 
-                        match send_sol_transfer(
-                            &rpc_client,
-                            &keypair,
-                            &recipient,
-                            config.transfer_amount_lamports,
-                        )
-                        .await
-                        {
-                            Ok(signature) => info!("SOL transfer sent: {}", signature),
-                            Err(e) => error!("Failed to send SOL transfer: {}", e),
-                        }
+                    match send_sol_transfer(
+                        &rpc_client,
+                        &keypair,
+                        &recipient,
+                        config.transfer_amount_lamports,
+                    )
+                    .await
+                    {
+                        Ok(signature) => info!("SOL transfer sent: {}", signature),
+                        Err(e) => error!("Failed to send SOL transfer: {}", e),
                     }
                 }
             }
