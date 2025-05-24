@@ -23,16 +23,18 @@ async fn check_transaction_batch(
     client: &RpcClient,
     batch: &[TransactionResult],
 ) -> Vec<TransactionResult> {
-    let tasks = batch.iter().map(|result| check_transaction(client, result));
+    let tasks = batch
+        .iter()
+        .map(|result| check_transaction(client, result.clone()));
     join_all(tasks).await
 }
 
-async fn check_transaction(client: &RpcClient, result: &TransactionResult) -> TransactionResult {
-    let tx = match result.clone() {
+async fn check_transaction(client: &RpcClient, result: TransactionResult) -> TransactionResult {
+    let tx = match result {
         TransactionResult::Unknown { tx, details: _ } => tx,
         TransactionResult::WithStatus { tx, status: _ } => tx,
         TransactionResult::Sent(tx) => tx,
-        _ => return result.clone(),
+        _ => return result,
     };
     let Ok(signature) = Signature::from_str(&tx.signature) else {
         return TransactionResult::Failed {
