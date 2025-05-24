@@ -2,13 +2,13 @@
 resolver = "2"
 members = [
     "first"
-, "second"]
+, "second", "third"]
 
 [workspace.dependencies]
 anyhow = "1.0.98"
 futures = "0.3.31"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_yaml = "0.9.34"
-solana-client = "2.0"
-solana-sdk = { version = "2.2.2" }
+solana-client = "2.*"
+solana-sdk = { version = "2.*" }
 tokio = { version = "1.0", features = ["full"] }

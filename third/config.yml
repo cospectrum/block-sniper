@@ -1,0 +1,6 @@
+rpc_url: "https://api.mainnet-beta.solana.com"
+recipient_wallet: "YOUR_RECIPIENT_WALLET_ADDRESS_HERE"
+transfer_amount_lamports: 10
+private_key_base58: "YOUR_BASE58_PRIVATE_KEY_HERE"
+geyser_endpoint: https://grpc.ny.shyft.to
+x_token: b2b972c6-fff2-4b5c-aac9-375c6984b80e
