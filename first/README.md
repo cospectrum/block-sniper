@@ -16,6 +16,6 @@ The `batch_size` will control how many wallet balance requests are sent concurre
 
 
 2. Run the task:
-```rust
+```sh
 CONFIG=./config.yml cargo run
 ```
