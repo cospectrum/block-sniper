@@ -1,4 +1,5 @@
 # first
+Get wallet balances.
 
 ## Getting Started
 
@@ -7,10 +8,11 @@
 rpc_url: <solana url>
 batch_size: <usize>
 wallets:
-    - <addr1>
-    - <addr2>
+    - <pub_key1>
+    - <pub_key2>
     ...
 ```
+The `batch_size` will control how many wallet balance requests are sent concurrently.
 
 
 2. Run the task:

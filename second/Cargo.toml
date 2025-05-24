@@ -1,0 +1,14 @@
+[package]
+name = "second"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+solana-client.workspace = true
+solana-sdk.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true
+tokio.workspace = true
+anyhow.workspace = true
+futures.workspace = true
+ed25519-dalek = "2.1.1"
